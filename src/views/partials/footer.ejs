@@ -1,0 +1,46 @@
+<footer class="footer mt-5 fade-in">
+        <div class="container footer-content">
+            <div>
+                <h3 class="footer-logo">TuSach</h3>
+                <p class="footer-text">
+                    Sách là kho tàng tri thức của nhân loại, mỗi trang viết đều chứa
+                    đựng những bài học quý giá
+                </p>
+                <div class="social">
+                    <img src="/images/iconfacebook.svg" alt="Facebook" />
+                    <img src="/images/icon_instagram.svg" alt="Instagram" />
+                    <img src="/images/twitter.svg" alt="Twitter" />
+                    <img src="/images/youtube.svg" alt="Youtube" />
+                </div>
+            </div>
+
+            <div class="d-none d-md-block">
+                <img class="footer-book" src="/images/nhagiakim.jpg" alt="Footer Book" />
+            </div>
+        </div>
+        
+        <div class="container text-center mt-4">
+            <p style="opacity: 0.3; font-size: 12px;">© 2026 TuSach Project</p>
+        </div>
+    </footer>
+
+    <script>
+        // Script điều khiển hiệu ứng Fade-in chuẩn như bản gốc của Tuyến
+        const elements = document.querySelectorAll(".fade-in");
+        const show = () => {
+            const trigger = window.innerHeight * 0.9;
+            elements.forEach((el) => {
+                const top = el.getBoundingClientRect().top;
+                if (top < trigger) {
+                    el.classList.add("show");
+                }
+            });
+        };
+        window.addEventListener("scroll", show);
+        window.addEventListener("load", show);
+        // Chạy ngay lập tức khi load trang
+        show();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

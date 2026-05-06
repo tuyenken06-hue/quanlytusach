@@ -1,103 +1,29 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>TuSach</title>
+<%- include('partials/header', { title: 'Home' }) %>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-  </head>
+<main>
+    <div class="container mt-5">
+        <div class="hero fade-in">
+            <div class="hero-content">
+                <h2 class="hero-title">Quản lý tủ sách</h2>
+                <p class="hero-text">
+                    Đọc sách sẽ giúp bạn biết thêm nhiều
+                    <br />
+                    điều mới mỗi ngày.
+                </p>
+                <a href="/books" class="text-decoration-none">
+                    <button class="start-btn">Bắt đầu ngay</button>
+                </a>
+            </div>
 
-  <body>
-    <!-- NAVBAR -->
-
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm">
-      <div class="container">
-        <img src="/images/Logo.svg" width="90" />
-
-        <ul class="navbar-nav ms-4">
-          <li class="nav-item">
-            <a class="nav-link active">Home</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link">Bookcase</a>
-          </li>
-        </ul>
-
-        <!-- SEARCH -->
-
-        <div class="search-box">
-          <input type="text" placeholder="Search..." />
-
-          <img src="/images/icontimkiem.png" />
+            <div class="hero-image-wrapper">
+                <img class="hero-img" src="/images/tusach.jpg" alt="Hero" />
+            </div>
         </div>
-
-        <div class="ms-3">
-          <a href="/login" class="btn btn-login">Login</a>
-          <a href="/register" class="btn btn-outline-dark">Sign up</a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- HERO -->
-
-    <div class="container mt-4">
-      <div class="hero">
-        <div>
-          <h2 class="hero-title">Quản lý tủ sách</h2>
-
-          <p class="hero-text">
-            Đọc sách sẽ giúp bạn biết thêm nhiều
-            <br />
-            điều mới mỗi ngày.
-          </p>
-
-          <button class="start-btn">Bắt đầu ngay</button>
-        </div>
-
-        <div>
-          <img class="hero-img" src="/images/tusach.jpg" />
-        </div>
-      </div>
     </div>
 
-    <!-- SLIDE BOOK -->
-
-    <div class="container book-slide">
-      <img src="/images/dacnhantam.jpg" />
+    <div class="container book-slide fade-in">
+        <img src="/images/dacnhantam.jpg" alt="Featured Book" />
     </div>
+</main>
 
-    <!-- FOOTER -->
-
-    <footer class="footer">
-      <div class="container footer-content">
-        <div>
-          <h3 class="footer-logo">TuSach</h3>
-
-          <p class="footer-text">
-            Sách là kho tàng tri thức của nhân loại, mỗi trang viết đều chứa
-            đựng những bài học quý giá
-          </p>
-
-          <div class="social">
-            <img src="/images/iconfacebook.svg" />
-
-            <img src="/images/icon_instagram.svg" />
-
-            <img src="/images/twitter.svg" />
-
-            <img src="/images/youtube.svg" />
-          </div>
-        </div>
-
-        <div>
-          <img class="footer-book" src="/images/nhagiakim.jpg" />
-        </div>
-      </div>
-    </footer>
-  </body>
-</html>
+<%- include('partials/footer') %>
