@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    purchasedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }]
 },
 {
     versionKey: false,

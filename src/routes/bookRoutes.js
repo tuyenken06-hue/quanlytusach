@@ -14,4 +14,11 @@ router.post("/edit/:id", bookController.updateBook);
 // Xử lý xóa sách khỏi kệ
 router.post("/delete/:id", bookController.deleteBook);
 
+router.get("/read/:id", bookController.readBook);
+
+router.get("/profile", bookController.getProfile);
+router.post("/buy/:id", bookController.buyBook);
+
+router.get('/new', bookController.getNewBooksPage);
+router.post('/update-status/:id', bookController.updateStatus);
 module.exports = router;

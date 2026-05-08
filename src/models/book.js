@@ -12,6 +12,15 @@ const bookSchema = new mongoose.Schema({
     publishYear: { 
         type: Number 
     },
+    price: {
+        type: Number,
+        default: 0
+    },
+    category: {
+        type: String,
+        enum: ['Công nghệ', 'Kinh tế', 'Văn học', 'Chưa phân loại'],
+        default: 'Chưa phân loại'
+    },
     status: { 
         type: String, 
         enum: ['Đang đọc', 'Đã xong', 'Muốn mua'], 

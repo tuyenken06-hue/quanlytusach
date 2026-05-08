@@ -1,0 +1,142 @@
+<%- include('partials/header', { title: 'Sách Mới Cập Nhật' }) %>
+
+<style>
+    :root {
+        --brand-primary: #2563eb;
+        --brand-dark: #0f172a;
+        --bg-soft: #f8fafc;
+        --border-soft: #e2e8f0;
+        --radius-lg: 16px;
+        --radius-md: 10px;
+    }
+
+    body { background-color: var(--bg-soft); color: #334155; }
+
+    .new-hero-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 24px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+    }
+
+    .book-card {
+        background: white;
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+        border-color: var(--brand-primary);
+    }
+
+    .book-price-tag {
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--brand-primary);
+        font-weight: 800;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .btn-custom {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: 0.2s;
+        border: none;
+        width: 100%;
+    }
+
+    .btn-read-now {
+        background: var(--brand-primary);
+        color: white;
+        margin-top: 20px;
+    }
+    .btn-read-now:hover {
+        background: #1d4ed8;
+        color: white !important;
+    }
+
+    .publish-footer {
+        margin-top: auto;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-soft);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #94a3b8;
+        font-size: 0.8rem;
+    }
+
+    .category-label {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 2px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+    }
+</style>
+
+<main class="container py-5">
+    <div class="new-hero-banner shadow-sm text-center text-md-start">
+        <span class="badge bg-success rounded-pill px-3 py-2 mb-3 fw-bold" style="font-size: 0.7rem;">LATEST ARRIVALS</span>
+        <h1 class="mb-2">Top 10 Sách Mới Nhất</h1>
+        <p class="opacity-75 mb-0">Danh sách quản trị các đầu sách vừa được cập nhật vào kho dữ liệu.</p>
+    </div>
+
+    <div class="row g-4">
+        <% if (typeof books !== 'undefined' && books.length > 0) { %>
+            <% books.forEach(book => { %>
+                <div class="col-md-6 col-lg-3">
+                    <div class="book-card">
+                        <div class="book-price-tag">
+                            <%= book.price ? book.price.toLocaleString('vi-VN') : 0 %> đ
+                        </div>
+
+                        <div class="mb-2">
+                            <h5 class="fw-bold text-dark mb-1 text-truncate" title="<%= book.title %>">
+                                <%= book.title %>
+                            </h5>
+                            <p class="text-muted small mb-2"><%= book.author %></p>
+                            <span class="category-label"><%= book.category || 'Chưa phân loại' %></span>
+                        </div>
+                        
+                        <div class="action-group">
+                            <a href="/books/read/<%= book._id %>" class="btn-custom btn-read-now">
+                                <i class="bi bi-eye-fill me-2"></i> Xem chi tiết
+                            </a>
+                        </div>
+
+                        <div class="publish-footer mt-4">
+                            <span><i class="bi bi-calendar-event me-1"></i> <%= book.publishYear %></span>
+                            <span class="fw-bold text-success" style="letter-spacing: 1px;">NEW</span>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="col-12 text-center py-5">
+                <p class="text-muted fs-5">Chưa có dữ liệu sách mới.</p>
+                <a href="/books" class="btn btn-outline-primary px-4">Quay lại trang chủ</a>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

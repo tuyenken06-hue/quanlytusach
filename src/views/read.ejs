@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+
+<div class="read-container" style="max-width: 900px; margin: 40px auto; padding: 20px; background: #fdfdfd; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <header style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px;">
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #333;">
+            <%= book.title %>
+        </h1>
+        <p style="font-style: italic; color: #666;">Tác giả: <%= book.author %></p>
+        <a href="/books" style="text-decoration: none; color: #007bff;">← Quay lại tủ sách</a>
+    </header>
+
+    <article class="book-content" style="font-size: 1.25rem; line-height: 1.8; color: #2c3e50; white-space: pre-wrap; text-align: justify;">
+        <% if (book.content) { %>
+            <%= book.content %>
+        <% } else { %>
+            <p style="text-align: center; color: #999;">Nội dung cuốn sách này đang được cập nhật...</p>
+        <% } %>
+    </article>
+</div>
+
+<%- include('partials/footer') %>
