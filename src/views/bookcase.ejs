@@ -20,7 +20,6 @@
     }
     .btn-primary-custom:hover { background-color: #334155; transform: translateY(-2px); color: white; }
 
-    /* Filter Pills */
     .filter-pills { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
     .filter-link {
         background: white; border: 1px solid var(--border-soft); color: #64748b;
@@ -30,7 +29,6 @@
     .filter-link:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
     .filter-link.active { background: var(--brand-primary) !important; color: white !important; border-color: var(--brand-primary); }
 
-    /* Book Card */
     .book-card {
         background: white; border: 1px solid var(--border-soft); border-radius: 20px;
         padding: 24px; height: 100%; transition: all 0.3s ease;
@@ -40,14 +38,15 @@
 
     .book-price-tag {
         background: rgba(37, 99, 235, 0.1); color: var(--brand-primary);
-        font-weight: 800; padding: 4px 10px; border-radius: 8px; font-size: 0.9rem;
+        font-weight: 800; padding: 6px 14px; border-radius: 8px; font-size: 0.95rem;
+        white-space: nowrap;          /* ← Sửa lỗi xuống dòng */
     }
 
-    /* Dropdown Admin */
     .custom-dropdown { position: relative; }
     .btn-custom-toggle { 
         width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
         border: none; background: #f1f5f9; color: #64748b; transition: 0.2s; cursor: pointer;
+        border-radius: 50%;
     }
     .btn-custom-toggle:hover { background: var(--brand-primary); color: white; }
     
@@ -73,6 +72,7 @@
         transition: all 0.2s;
         text-decoration: none;
         display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        margin-bottom: 8px;
     }
     .btn-read-now {
         background: var(--brand-primary); color: white;
@@ -86,7 +86,6 @@
         background: #2563eb; color: white;
     }
 
-    /* Status Select */
     .status-select-tag {
         font-size: 0.8rem;
         font-weight: 700;
@@ -130,7 +129,6 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="book-card">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <!-- Trạng thái - Chỉ User -->
                             <% if (!isAdmin) { %>
                                 <form action="/books/update-status/<%= book._id %>" method="POST" class="mb-0">
                                     <select name="status" class="status-select-tag 
@@ -192,26 +190,28 @@
                     </div>
                 </div>
 
-                <!-- Modal Edit (Admin) -->
+                <!-- Modal Edit -->
                 <% if (isAdmin) { %>
                 <div class="modal fade" id="editBookModal<%= book._id %>" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content shadow-lg" style="border-radius: 20px;">
                             <form action="/books/edit/<%= book._id %>" method="POST">
-                                <!-- Nội dung modal edit giữ nguyên như cũ -->
                                 <div class="modal-header border-0 pt-4 px-4">
                                     <h5 class="modal-title fw-bold">Cập nhật sách</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body p-4">
                                     <div class="row g-3">
-                                        <div class="col-md-6"><label class="form-label small fw-bold">Tên sách</label>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Tên sách</label>
                                             <input type="text" name="title" value="<%= book.title %>" class="form-control bg-light" required>
                                         </div>
-                                        <div class="col-md-6"><label class="form-label small fw-bold">Tác giả</label>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Tác giả</label>
                                             <input type="text" name="author" value="<%= book.author %>" class="form-control bg-light" required>
                                         </div>
-                                        <div class="col-md-6"><label class="form-label small fw-bold">Giá</label>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">Giá</label>
                                             <input type="number" name="price" value="<%= book.price %>" class="form-control bg-light">
                                         </div>
                                         <div class="col-md-6">
@@ -238,18 +238,39 @@
     </div>
 </main>
 
-<!-- Modal Thêm sách -->
+<!-- ==================== MODAL THÊM SÁCH MỚI (ĐÃ SỬA) ==================== -->
 <div class="modal fade" id="addBookModal" tabindex="-1">
-    <!-- Giữ nguyên modal thêm sách như cũ của bạn -->
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg" style="border-radius: 20px; border: none;">
             <form action="/books/add" method="POST">
-                <!-- ... nội dung modal thêm sách ... -->
                 <div class="modal-header border-0 pt-4 px-4">
                     <h5 class="modal-title fw-bold">Thêm sách mới</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <!-- Thêm các field tương tự modal edit -->
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tên sách</label>
+                            <input type="text" name="title" class="form-control bg-light" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tác giả</label>
+                            <input type="text" name="author" class="form-control bg-light" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Giá tiền</label>
+                            <input type="number" name="price" class="form-control bg-light">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Thể loại</label>
+                            <select name="category" class="form-select bg-light">
+                                <option value="Công nghệ">Công nghệ</option>
+                                <option value="Kinh tế">Kinh tế</option>
+                                <option value="Văn học">Văn học</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="modal-footer border-0 pb-4 px-4">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
                     <button type="submit" class="btn-primary-custom">Thêm sách</button>
@@ -262,7 +283,6 @@
 <%- include('partials/footer') %>
 
 <script>
-    // Dropdown Admin
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-custom-toggle').forEach(btn => {
             btn.addEventListener('click', function(e) {

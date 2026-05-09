@@ -1,22 +1,42 @@
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const dotenv = require('dotenv');
+
+dotenv.config({ quiet: true });
+
 const app = express();
 
-
+// Session
 app.use(session({
-    secret: 'tuyen_secret_key', 
+    secret: process.env.SESSION_SECRET || 'tuyen_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } 
+    cookie: { secure: false }
 }));
 
+// Truyền user vào EJS
 app.use((req, res, next) => {
-    res.locals.user = req.session.user || null; 
+    res.locals.user = req.session.user || null;
     next();
 });
 
-//Middleware kiểm tra đăng nhập
+// Cấu hình Express
+app.use(express.static(path.join(__dirname, "public")));
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.get("/", (req, res) => {
+    res.render("home");
+});
+
+const authRouter = require("./routes/authRouter");
+app.use("/", authRouter);
+
 const requireAuth = (req, res, next) => {
     if (req.session && req.session.user) {
         next();
@@ -25,33 +45,7 @@ const requireAuth = (req, res, next) => {
     }
 };
 
-app.use(express.static(path.join(__dirname, "public")))
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true}));
-
-
-app.get("/", (req,res) => {
-    res.render("home");
-});
-
-const authRouter = require("./routes/authRouter");
-app.use("/", authRouter)
-
-//Phải đi qua requireAuth mới vào được
 const bookRouter = require("./routes/bookRoutes");
-app.use("/books", requireAuth, bookRouter); 
-
-// Kết nối Cơ sở dữ liệu
-const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/quanlytusach")
-.then(() => {
-    console.log("Mogodb success");
-})
-.catch((err) => {
-    console.log(err)
-})
+app.use("/books", requireAuth, bookRouter);
 
 module.exports = app;
