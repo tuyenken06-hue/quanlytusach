@@ -102,3 +102,23 @@ exports.logout = (req, res) => {
         res.redirect('/'); 
     });
 };
+exports.getProfile = async (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.redirect("/login");
+        }
+
+        const userId = req.session.user.id;
+        const userData = await User.findById(userId).populate('purchasedBooks');
+
+        res.render("profile", {
+            title: "Hồ sơ của tôi",
+            user: userData,
+            books: userData.purchasedBooks || [],
+            isAdmin: userData.username === 'tuyenken06@gmail.com'
+        });
+    } catch (err) {
+        console.error("Lỗi khi lấy hồ sơ:", err);
+        res.status(500).send("Lỗi hệ thống.");
+    }
+};

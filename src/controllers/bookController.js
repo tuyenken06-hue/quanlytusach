@@ -4,10 +4,19 @@ const User = require('../models/User');
 
 exports.getBooks = async (req, res) => {
     try {
-        const { category, status } = req.query; 
+        const { category, status, search } = req.query; 
         
         let filter = {};
         let activeFilter = 'All';
+        let searchTerm = '';
+
+        if (search && search.trim() !== '') {
+            searchTerm = search.trim();
+            filter.$or = [
+                { title: { $regex: searchTerm, $options: 'i' } },
+                { author: { $regex: searchTerm, $options: 'i' } }
+            ];
+        }
 
         if (category && category !== 'All') {
             filter.category = category; 
@@ -18,14 +27,16 @@ exports.getBooks = async (req, res) => {
             activeFilter = status;
         }
 
-        const books = await Book.find(filter);
+        const books = await Book.find(filter).sort({ createdAt: -1 });
+
         const user = req.session.user;
 
         res.render("bookcase", {
             books: books,
             currentFilter: activeFilter,
             user: user,
-            isAdmin: user && user.username === 'tuyenken06@gmail.com'
+            isAdmin: user && user.username === 'tuyenken06@gmail.com',
+            search: searchTerm  
         });
     } catch (err) {
         console.error("Lỗi lọc sách:", err);
@@ -33,7 +44,7 @@ exports.getBooks = async (req, res) => {
     }
 };
 
-// Xử lý thêm sách mới (Admin - Đã thêm Category)
+// Xử lý thêm sách mới 
 exports.addBook = async (req, res) => {
     try {
         const { title, author, publishYear, status, price, category } = req.body;

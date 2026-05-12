@@ -8,10 +8,11 @@ router.get("/register", (req, res) => {
 
 router.get("/login", (req, res) => {
     res.render("login", { errors: {}, oldData: {} });
-});
+}); 
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.get("/logout", authController.logout);
+router.get('/profile', authController.getProfile);
 
 module.exports = router;

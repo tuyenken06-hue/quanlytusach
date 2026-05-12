@@ -52,6 +52,15 @@
             padding: 1px 4px;
             border-radius: 4px;
         }
+
+        /* Style cho ô tìm kiếm */
+        .search-box input {
+            border-radius: 50px 0 0 50px;
+            border-right: none;
+        }
+        .search-box button {
+            border-radius: 0 50px 50px 0;
+        }
     </style>
 </head>
 
@@ -74,9 +83,18 @@
                 </li>
             </ul>
 
+            <!-- ==================== TÌM KIẾM ==================== -->
             <div class="search-box d-none d-md-block">
-                <input type="text" placeholder="Search..." />
-                <img src="/images/icontimkiem.png" alt="Search" />
+                <form action="/books" method="GET" class="d-flex">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Tìm sách hoặc tác giả..." 
+                           value="<%= typeof search !== 'undefined' ? search : '' %>">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
             </div>
 
             <div class="ms-3 d-flex gap-2 align-items-center">

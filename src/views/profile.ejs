@@ -1,107 +1,84 @@
-<%- include('partials/header', { title: 'Sách Mới Cập Nhật' }) %>
+<%- include('partials/header', { title: 'Hồ Sơ Của Tôi' }) %>
 
 <style>
-    :root {
-        --brand-primary: #2563eb;
-        --brand-dark: #0f172a;
-        --bg-soft: #f8fafc;
-        --border-soft: #e2e8f0;
-        --radius-lg: 16px;
+    .profile-header {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        color: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        margin-bottom: 30px;
     }
-
-    body { background-color: var(--bg-soft); color: #334155; }
-
-    .new-hero-banner {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        border-radius: 24px; padding: 40px; color: white; margin-bottom: 40px;
+    .profile-avatar-big {
+        width: 120px;
+        height: 120px;
+        background-color: white;
+        color: #2563eb;
+        font-size: 3rem;
+        font-weight: 800;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-
-    .book-card {
-        background: white; border: 1px solid var(--border-soft);
-        border-radius: var(--radius-lg); padding: 20px;
-        height: 100%; display: flex; flex-direction: column; transition: 0.3s;
+    .book-card-small {
+        transition: all 0.3s ease;
     }
-    .book-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
-
-    /* Dropdown trạng thái cho User */
-    .status-select-tag {
-        font-size: 0.75rem; font-weight: 700; height: 32px; padding: 0 12px;
-        border-radius: 6px; border: none; cursor: pointer; margin-bottom: 8px;
+    .book-card-small:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 25px rgba(0,0,0,0.1);
     }
-    .status-reading { background: #eff6ff; color: #1e40af; }
-    .status-done { background: #f0fdf4; color: #166534; }
-    .status-wish { background: #fff7ed; color: #9a3412; }
-
-    .book-price-tag {
-        background: rgba(37, 99, 235, 0.08); color: var(--brand-primary);
-        font-weight: 800; padding: 4px 12px; border-radius: 6px; font-size: 0.95rem;
-    }
-
-    .btn-custom {
-        height: 44px; display: flex; align-items: center; justify-content: center;
-        border-radius: 10px; font-weight: 700; text-decoration: none; width: 100%;
-    }
-    .btn-read-now { background: var(--brand-primary); color: white; margin-bottom: 8px; }
-    .btn-read-now:hover { background: #1d4ed8; color: white !important; }
-    .btn-buy-now { background: white; border: 1px solid var(--border-soft); color: #64748b; }
 </style>
 
 <main class="container py-5">
-    <div class="new-hero-banner shadow-sm">
-        <h1 class="mb-2">Top 10 Sách Mới Nhất</h1>
-        <p class="opacity-75">Nơi cập nhật những đầu sách vừa nhập kho.</p>
+    <div class="profile-header text-center">
+        <div class="profile-avatar-big mx-auto mb-3">
+            <%= user.username ? user.username.charAt(0).toUpperCase() : 'U' %>
+        </div>
+        <h2 class="fw-bold mb-1"><%= user.username %></h2>
+        <p class="mb-0 opacity-75">Thành viên từ <%= user.createdAt ? new Date(user.createdAt).getFullYear() : '2026' %></p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="fw-bold mb-3">
+                <i class="bi bi-book-fill me-2"></i>
+                Sách đã mua (<%= books ? books.length : 0 %>)
+            </h4>
+        </div>
     </div>
 
     <div class="row g-4">
-        <% if (typeof books !== 'undefined' && books.length > 0) { %>
+        <% if (books && books.length > 0) { %>
             <% books.forEach(book => { %>
-                <div class="col-md-6 col-lg-3">
-                    <div class="book-card">
-                        <div class="mb-3 d-flex justify-content-between align-items-start">
-                            <% if (!isAdmin) { %>
-                                <form action="/books/update-status/<%= book._id %>" method="POST">
-                                    <select name="status" class="status-select-tag 
-                                        <%= book.status === 'Đang đọc' ? 'status-reading' : 
-                                           book.status === 'Đã xong' ? 'status-done' : 'status-wish' %>"
-                                        onchange="this.form.submit()">
-                                        <option value="Đang đọc" <%= book.status === 'Đang đọc' ? 'selected' : '' %>>Đang đọc</option>
-                                        <option value="Đã xong" <%= book.status === 'Đã xong' ? 'selected' : '' %>>Đã xong</option>
-                                        <option value="Muốn mua" <%= book.status === 'Muốn mua' ? 'selected' : '' %>>Muốn mua</option>
-                                    </select>
-                                </form>
-                            <% } else { %>
-                                <span class="badge bg-light text-dark border">ID: <%= book._id.toString().slice(-4) %></span>
-                            <% } %>
-
-                            <div class="book-price-tag">
-                                <%= book.price ? book.price.toLocaleString('vi-VN') : 0 %> đ
+                <div class="col-md-6 col-lg-4">
+                    <div class="book-card-small card h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-primary"><%= book.category || 'Chưa phân loại' %></span>
+                                <span class="fw-bold text-primary"><%= book.price ? book.price.toLocaleString('vi-VN') : 0 %> đ</span>
                             </div>
-                        </div>
-
-                        <h5 class="fw-bold text-dark text-truncate"><%= book.title %></h5>
-                        <p class="text-muted small mb-3"><%= book.author %></p>
-                        
-                        <div class="mt-auto">
-                            <a href="/books/read/<%= book._id %>" class="btn-custom btn-read-now">
-                                <i class="bi bi-book-fill me-2"></i> Đọc ngay
+                            
+                            <h5 class="card-title fw-bold text-dark"><%= book.title %></h5>
+                            <p class="text-muted small"><%= book.author %></p>
+                            
+                            <a href="/books/read/<%= book._id %>" class="btn btn-primary w-100 mt-3">
+                                <i class="bi bi-book-fill"></i> Đọc sách
                             </a>
-
-                            <% if (!isAdmin) { %>
-                                <form action="/books/buy/<%= book._id %>" method="POST">
-                                    <button type="submit" class="btn-custom btn-buy-now">
-                                        <i class="bi bi-cart-plus-fill me-2"></i> Mua ngay
-                                    </button>
-                                </form>
-                            <% } %>
                         </div>
-
-                        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center text-secondary small">
-                            <span><%= book.publishYear %></span>
-                            <span class="fw-bold text-uppercase text-primary"><%= book.category %></span>
+                        <div class="card-footer bg-light border-0 text-secondary small">
+                            Năm xuất bản: <%= book.publishYear || 'N/A' %>
                         </div>
                     </div>
                 </div>
             <% }) %>
+        <% } else { %>
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-book display-1 text-muted mb-3"></i>
+                <h5 class="text-muted">Bạn chưa mua sách nào</h5>
+                <a href="/books" class="btn btn-outline-primary mt-3">Khám phá sách ngay</a>
+            </div>
         <% } %>
     </div>
 </main>
