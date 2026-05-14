@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: 'Sách Mới Cập Nhật' }) %>
+<%- include('layout/header', { title: 'Sách Mới Cập Nhật' }) %>
 
 <style>
     :root {
@@ -91,13 +91,28 @@
         text-transform: uppercase;
         font-size: 0.7rem;
     }
+
+    /* Style cho phân trang đồng bộ với trang bookcase */
+    .pagination .page-link {
+        border: none;
+        padding: 10px 18px;
+        border-radius: 10px !important;
+        font-weight: 700;
+        color: var(--brand-dark);
+        background: white;
+        transition: 0.3s;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: var(--brand-primary);
+        color: white;
+    }
 </style>
 
 <main class="container py-5">
     <div class="new-hero-banner shadow-sm text-center text-md-start">
         <span class="badge bg-success rounded-pill px-3 py-2 mb-3 fw-bold" style="font-size: 0.7rem;">LATEST ARRIVALS</span>
-        <h1 class="mb-2">Top 10 Sách Mới Nhất</h1>
-        <p class="opacity-75 mb-0">Danh sách 10 sách vừa được cập nhật mới nhất.</p>
+        <h1 class="mb-2">Top Sách Mới Nhất</h1>
+        <p class="opacity-75 mb-0">Danh sách các đầu sách vừa được cập nhật mới nhất.</p>
     </div>
 
     <div class="row g-4">
@@ -137,6 +152,28 @@
             </div>
         <% } %>
     </div>
+
+    <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <nav class="mt-5 mb-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link shadow-sm mx-1" href="/books/new?page=<%= currentPage - 1 %>">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <a class="page-link shadow-sm mx-1" href="/books/new?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link shadow-sm mx-1" href="/books/new?page=<%= currentPage + 1 %>">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
 </main>
 
-<%- include('partials/footer') %>
+<%- include('layout/footer') %>

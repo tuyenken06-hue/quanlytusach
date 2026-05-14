@@ -1,15 +1,20 @@
 const Book = require('../models/Book');
-const User = require('../models/User'); 
+const User = require('../models/User');
 
 
-exports.getBooks = async (req, res) => {
+exports.getBooks = async (req, res, next) => {
     try {
-        const { category, status, search } = req.query; 
+        const { category, status, search } = req.query;
+
         
+        const page = parseInt(req.query.page) || 1;
+        const perPage = 8;
+
         let filter = {};
         let activeFilter = 'All';
         let searchTerm = '';
 
+        
         if (search && search.trim() !== '') {
             searchTerm = search.trim();
             filter.$or = [
@@ -19,33 +24,38 @@ exports.getBooks = async (req, res) => {
         }
 
         if (category && category !== 'All') {
-            filter.category = category; 
+            filter.category = category;
             activeFilter = category;
-        } 
-        else if (status && status !== 'All') {
+        } else if (status && status !== 'All') {
             filter.status = status;
             activeFilter = status;
         }
 
-        const books = await Book.find(filter).sort({ createdAt: -1 });
+        const totalBooks = await Book.countDocuments(filter);
+
+        const books = await Book.find(filter)
+            .sort({ createdAt: -1 })
+            .skip((perPage * page) - perPage)
+            .limit(perPage);
 
         const user = req.session.user;
 
         res.render("bookcase", {
-            books: books,
+            books,
             currentFilter: activeFilter,
-            user: user,
+            user,
             isAdmin: user && user.username === 'tuyenken06@gmail.com',
-            search: searchTerm  
+            search: searchTerm,
+            currentPage: page,
+            totalPages: Math.ceil(totalBooks / perPage)
         });
     } catch (err) {
         console.error("Lỗi lọc sách:", err);
-        res.status(500).send("Lỗi hệ thống");
+        next(err);                   
     }
 };
 
-// Xử lý thêm sách mới 
-exports.addBook = async (req, res) => {
+exports.addBook = async (req, res, next) => {
     try {
         const { title, author, publishYear, status, price, category } = req.body;
 
@@ -53,78 +63,97 @@ exports.addBook = async (req, res) => {
             title,
             author,
             publishYear,
-            price, 
+            price,
             status,
-            category 
+            category
         });
 
         await newBook.save();
+
         console.log("Thành công: Một cuốn sách mới đã được thêm vào kệ!");
         res.redirect("/books");
     } catch (err) {
         console.error("Lỗi khi thêm sách:", err);
-        res.status(500).send("Chúng tôi không thể lưu cuốn sách này lúc này.");
+        next(err);
     }
 };
 
-// Xử lý cập nhật thông tin sách (Admin - Đã thêm Category)
-exports.updateBook = async (req, res) => {
+exports.updateBook = async (req, res, next) => {
     try {
         const { title, author, publishYear, status, price, category } = req.body;
-        
+
         await Book.findByIdAndUpdate(req.params.id, {
             title,
             author,
             publishYear,
-            price, 
+            price,
             status,
-            category 
+            category
         });
 
         console.log("Thành công: Đã cập nhật thông tin sách!");
         res.redirect("/books");
     } catch (err) {
         console.error("Lỗi khi cập nhật sách:", err);
-        res.status(500).send("Lỗi khi cập nhật thông tin sách.");
+        next(err);
     }
 };
 
-
-exports.deleteBook = async (req, res) => {
+exports.deleteBook = async (req, res, next) => {
     try {
         await Book.findByIdAndDelete(req.params.id);
         res.redirect("/books");
     } catch (err) {
-        res.status(500).send("Lỗi khi xóa sách.");
+        console.error("Lỗi khi xóa sách:", err);
+        next(err);
     }
 };
 
-exports.readBook = async (req, res) => {
+exports.readBook = async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.id);
-        if (!book) return res.status(404).send("Không tìm thấy sách.");
-        res.render("read", { title: `Đang đọc: ${book.title}`, book: book });
+        if (!book) {
+            const error = new Error('Không tìm thấy sách');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        res.render("read", { 
+            title: `Đang đọc: ${book.title}`, 
+            book 
+        });
     } catch (err) {
-        res.status(500).send("Lỗi hệ thống.");
+        next(err);
     }
 };
 
-exports.buyBook = async (req, res) => {
+exports.buyBook = async (req, res, next) => {
     try {
-        if (!req.session.user) return res.redirect("/login");
+        if (!req.session.user) {
+            return res.redirect("/login");
+        }
+
         const userId = req.session.user.id;
-        await User.findByIdAndUpdate(userId, { $addToSet: { purchasedBooks: req.params.id } });
+        await User.findByIdAndUpdate(userId, {
+            $addToSet: { purchasedBooks: req.params.id }
+        });
+
         res.redirect("/books/profile");
     } catch (err) {
-        res.status(500).send("Lỗi khi thực hiện giao dịch.");
+        console.error("Lỗi khi mua sách:", err);
+        next(err);
     }
 };
 
-exports.getProfile = async (req, res) => {
+exports.getProfile = async (req, res, next) => {
     try {
-        if (!req.session.user) return res.redirect("/login");
+        if (!req.session.user) {
+            return res.redirect("/login");
+        }
+
         const userId = req.session.user.id;
         const userData = await User.findById(userId).populate('purchasedBooks');
+
         res.render("profile", {
             title: "Trang cá nhân của tôi",
             user: userData,
@@ -132,34 +161,42 @@ exports.getProfile = async (req, res) => {
             isAdmin: userData.username === 'tuyenken06@gmail.com'
         });
     } catch (err) {
-        res.status(500).send("Lỗi hệ thống.");
+        console.error("Lỗi lấy profile:", err);
+        next(err);
     }
 };
 
-exports.getNewBooksPage = async (req, res) => {
+exports.getNewBooksPage = async (req, res, next) => {
     try {
-        const latestBooks = await Book.find()
-            .sort({ createdAt: -1 }) 
-            .limit(10);
+        const page = parseInt(req.query.page) || 1;
+        const perPage = 8;
 
-        res.render("new_books", { 
-            books: latestBooks, 
-            isAdmin: req.session.user && req.session.user.username === 'tuyenken06@gmail.com'
+        const totalBooks = await Book.countDocuments();
+        const latestBooks = await Book.find()
+            .sort({ createdAt: -1 })
+            .skip((perPage * page) - perPage)
+            .limit(perPage);
+
+        res.render("new_books", {
+            books: latestBooks,
+            isAdmin: req.session.user && req.session.user.username === 'tuyenken06@gmail.com',
+            currentPage: page,
+            totalPages: Math.ceil(totalBooks / perPage)
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Lỗi server");
+        console.error("Lỗi lấy sách mới:", err);
+        next(err);
     }
 };
 
-exports.updateStatus = async (req, res) => {
+exports.updateStatus = async (req, res, next) => {
     try {
         await Book.findByIdAndUpdate(req.params.id, { 
             status: req.body.status 
         });
-        res.redirect('/books');    
+        res.redirect('/books');
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Không thể cập nhật trạng thái sách.");
+        console.error("Lỗi cập nhật trạng thái:", err);
+        next(err);
     }
 };
