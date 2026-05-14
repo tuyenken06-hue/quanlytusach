@@ -1,0 +1,18 @@
+<%- include('layout/header', { title: title }) %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <h1 class="display-1 text-danger fw-bold"><%= statusCode || 500 %></h1>
+            <h3 class="mb-4"><%= message %></h3>
+            
+            <% if (stack) { %>
+                <pre class="bg-light p-3 text-start"><%= stack %></pre>
+            <% } %>
+
+            <a href="/" class="btn btn-primary btn-lg">Quay về Trang chủ</a>
+        </div>
+    </div>
+</div>
+
+<%- include('layout/footer') %>

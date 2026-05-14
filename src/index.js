@@ -3,6 +3,7 @@ const path = require('path');
 const session = require('express-session');
 const dotenv = require('dotenv');
 
+
 dotenv.config({ quiet: true });
 
 const app = express();
@@ -29,6 +30,8 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+
 // Routes
 app.get("/", (req, res) => {
     res.render("home");
@@ -47,5 +50,14 @@ const requireAuth = (req, res, next) => {
 
 const bookRouter = require("./routes/bookRoutes");
 app.use("/books", requireAuth, bookRouter);
+
+
+const errorHandler = require('./middleware/errorHandler');
+app.use((req, res, next) => {
+    const error = new Error('Trang không tồn tại');
+    error.statusCode = 404;
+    next(error);
+});
+app.use(errorHandler);
 
 module.exports = app;
