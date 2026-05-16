@@ -1,27 +1,20 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const { registerSchema, loginSchema } = require("../helpers/joiHelper");
 
 exports.register = async (req, res) => {
     try {
-        const { email, password, confirm_password } = req.body;
+        const { error } = registerSchema.validate(req.body, { abortEarly: false });
 
-        let errors = {};
-
-        if (!email) errors.email = "Email không được để trống";
-        if (!password) errors.password = "Password không được để trống";
-        if (!confirm_password) errors.confirm_password = "Vui lòng nhập lại mật khẩu";
-
-        if (password && password.length < 6) {
-            errors.password = "Password phải lớn hơn hoặc bằng 6 ký tự";
-        }
-
-        if (password && confirm_password && password !== confirm_password) {
-            errors.confirm_password = "Mật khẩu không khớp";
-        }
-
-        if (Object.keys(errors).length > 0) {
+        if (error) {
+            let errors = {};
+            error.details.forEach((detail) => {
+                errors[detail.path[0]] = detail.message;
+            });
             return res.render("register", { errors, oldData: req.body });
         }
+
+        const { email, password } = req.body;
 
         const existingUser = await User.findOne({ username: email });
 
@@ -52,16 +45,17 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { error } = loginSchema.validate(req.body, { abortEarly: false });
 
-        let errors = {};
-
-        if (!email) errors.email = "Email không được để trống";
-        if (!password) errors.password = "Password không được để trống";
-
-        if (Object.keys(errors).length > 0) {
+        if (error) {
+            let errors = {};
+            error.details.forEach((detail) => {
+                errors[detail.path[0]] = detail.message;
+            });
             return res.render("login", { errors, oldData: req.body });
         }
+
+        const { email, password } = req.body;
 
         const user = await User.findOne({ username: email });
 
@@ -92,6 +86,7 @@ exports.login = async (req, res) => {
         });
     }
 };
+
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -102,6 +97,7 @@ exports.logout = (req, res) => {
         res.redirect('/'); 
     });
 };
+
 exports.getProfile = async (req, res) => {
     try {
         if (!req.session.user) {
