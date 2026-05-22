@@ -22,7 +22,7 @@ app.use((req, res, next) => {
     next();
 });
 
-
+// cấu hình view ejs
 app.use(express.static(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -39,13 +39,7 @@ app.get("/", (req, res) => {
 const authRouter = require("./routes/authRouter");
 app.use("/", authRouter);
 
-const requireAuth = (req, res, next) => {
-    if (req.session && req.session.user) {
-        next();
-    } else {
-        res.redirect('/login');
-    }
-};
+const requireAuth = require('./middleware/requireAuth');
 
 const bookRouter = require("./routes/bookRoutes");
 app.use("/books", requireAuth, bookRouter);
